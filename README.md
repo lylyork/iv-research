@@ -6,7 +6,7 @@
 
 Yulin Liu, advised by Professor Yifan Hu.
 
-This website presents a first-person overview of my work on asymptotic
+This website presents my work on asymptotic
 inference and online covariance estimation for streaming instrumental-variable
 regression, followed by instrument-guided acquisition under an expected budget.
 The current overview is a working draft, based on the November 7, 2026 report.

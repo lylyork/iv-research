@@ -9,7 +9,7 @@ Yulin Liu, advised by Professor Yifan Hu.
 This website presents my work on asymptotic
 inference and online covariance estimation for streaming instrumental-variable
 regression, followed by instrument-guided acquisition under an expected budget.
-The current overview is a working draft, based on the November 7, 2026 report.
+The research overview is accompanied by a technical report dated November 7, 2026.
 
 The website is served by GitHub Pages from the root of `main`.
 `index.html` contains the page; `report.pdf` is the complete report.

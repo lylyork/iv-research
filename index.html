@@ -8,7 +8,23 @@
   <title>Online IV Inference &amp; Budgeted Acquisition | Yulin Liu</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.css" integrity="sha384-WwGtaC6ywCHxA5cstpj/3+xIZvTez8dq2IcBQaXRkenHZ7FVVq1ZROtURwfbtTlG" crossorigin="anonymous">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/katex.min.js" integrity="sha384-a1WQdjRj162i159OYq041X6I4K8NenkrI09LlPmiHg0YOb7CR+wJOraXwK9abpnE" crossorigin="anonymous"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous" onload="renderMathInElement(document.body,{throwOnError:false});"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.19.1/dist/contrib/auto-render.min.js" integrity="sha384-bjyGPfbij8/NDKJhSGZNP/khQVgtHUE5exjm4Ydllo42FwIgYsdLO2lXGmRBf5Mz" crossorigin="anonymous" onload="renderPageMath();"></script>
+  <script>
+    function renderPageMath() {
+      const compact = window.matchMedia('(max-width: 540px)');
+      const equations = [...document.querySelectorAll('.equation[data-compact]')];
+      const originals = equations.map(element => element.textContent.trim().slice(2, -2));
+      renderMathInElement(document.body, {throwOnError: false});
+      function updateEquations() {
+        equations.forEach((element, index) => {
+          katex.render(compact.matches ? element.dataset.compact : originals[index],
+            element, {displayMode: true, throwOnError: false});
+        });
+      }
+      updateEquations();
+      compact.addEventListener('change', updateEquations);
+    }
+  </script>
   <style>
     :root { color-scheme:light; --ink:#202923; --muted:#657067; --accent:#275940; --line:#dce2da; }
     * { box-sizing:border-box; }
@@ -23,19 +39,23 @@
     .eyebrow,.number { color:var(--accent); font-size:12px; font-weight:700; letter-spacing:.15em; text-transform:uppercase; }
     .number { display:block; margin-bottom:10px; }
     .meta,.caption,footer { color:var(--muted); font-size:14px; }
+    .header-details { display:flex; justify-content:space-between; align-items:flex-start; gap:24px; margin:24px 0 30px; }
+    .header-details .meta { margin:0; }
+    .report-access { flex:0 1 470px; text-align:right; }
+    .report-access>a { font-size:15px; font-weight:600; }
+    .report-access .caption { margin:8px 0 0; line-height:1.6; }
     .lead { font-size:20px; line-height:1.7; margin:28px 0; }
-    .status { display:inline-block; margin-left:8px; padding:1px 8px; border:1px solid var(--line); border-radius:4px; font-size:12px; }
-    section { border-top:1px solid var(--line); padding-top:34px; margin-top:42px; }
+    section,.references-section { border-top:1px solid var(--line); padding-top:34px; margin-top:42px; }
     a { color:var(--accent); text-underline-offset:4px; }
     a:hover { text-decoration-thickness:2px; }
     a:focus-visible,summary:focus-visible { outline:3px solid #8bad73; outline-offset:5px; }
     nav { display:flex; flex-wrap:wrap; gap:8px 20px; padding:18px 0; border-top:1px solid var(--line); font-size:14px; }
-    .button { display:inline-block; border:1px solid var(--accent); border-radius:4px; padding:9px 17px; text-decoration:none; font-size:15px; font-weight:600; }
-    .button:hover { background:#edf2e9; }
-    .equation { max-width:100%; overflow-x:auto; margin:21px 0; padding:13px 16px; background:#f0f3ec; border-radius:4px; }
-    .equation .katex-display { margin:.2em 0; text-align:left; }
-    .equation .katex-display>.katex { text-align:left; }
-    .katex { font-size:1.04em; }
+    .equation { max-width:100%; overflow-x:auto; margin:24px 0; padding:10px 2px; }
+    .equation .katex-display { width:max-content; min-width:100%; margin:0; text-align:center; }
+    .equation .katex-display>.katex { text-align:center; }
+    .katex { font-size:1.08em; }
+    .equation .katex { font-size:1.12em; }
+    .confidence-interval { display:inline-block; white-space:nowrap; }
     .callout { padding:17px 20px; border-left:3px solid #9eb693; background:#edf2e9; margin:24px 0; }
     .callout p:last-child,details p:last-child { margin-bottom:0; }
     details { border:1px solid var(--line); border-radius:4px; padding:14px 18px; margin:22px 0; }
@@ -45,7 +65,8 @@
     li { margin:10px 0; }
     .references { font-size:15px; }
     footer { border-top:1px solid var(--line); margin-top:42px; padding-top:20px; }
-    @media(max-width:540px) { main { padding:35px 21px 44px; } body { font-size:16px; } .lead { font-size:18px; } h2 { font-size:26px; } .equation { padding:12px 10px; font-size:14px; } nav { gap:8px 15px; } }
+    @media(max-width:640px) { .header-details { flex-direction:column; gap:16px; } .report-access { flex:auto; max-width:100%; text-align:left; } .report-note-break { display:none; } }
+    @media(max-width:540px) { main { padding:35px 21px 44px; } body { font-size:16px; } .lead { font-size:18px; } h2 { font-size:26px; } .equation { margin:22px 0; padding:8px 1px; } .equation .katex { font-size:1em; } nav { gap:8px 15px; } }
     @media(prefers-reduced-motion:reduce) { html { scroll-behavior:auto; } }
   </style>
 </head>
@@ -54,176 +75,136 @@
   <header>
     <div class="eyebrow">Research overview</div>
     <h1>Statistical inference and budgeted acquisition for online IV regression</h1>
-    <p class="meta">Yulin Liu · Advised by Yifan Hu<br>Updated <time datetime="2026-11-07">November 7, 2026</time> <span class="status">Working draft</span></p>
-    <p class="lead">Under the guidance of Professor Yifan Hu, I study how online instrumental-variable estimators can quantify uncertainty and use a limited data-acquisition budget more effectively.</p>
-    <p>I started with the streaming IV algorithms of <a href="#ref-chen">Chen et al. (2024)</a>, developing asymptotic inference and online covariance estimation for their averaged iterates. Inspired by the importance-sampling perspective of <a href="#ref-aolaritei">Aolaritei et al. (2026)</a>, I then formulated an instrument-guided acquisition problem, derived its oracle policy, and developed online procedures with theoretical guarantees under explicit assumptions.</p>
-    <p><a class="button" href="./report.pdf">Read the full technical report (PDF) <span aria-hidden="true">↗</span></a></p>
+    <div class="header-details">
+      <p class="meta">Yulin Liu · Advised by Yifan Hu<br>Updated <time datetime="2026-11-08">November 8, 2026</time></p>
+      <div class="report-access" id="report">
+        <a href="./report.pdf">Full technical report (PDF)</a>
+        <p class="caption">The technical report contains the complete algorithms, assumptions,<br class="report-note-break"> theorem statements, and proofs.</p>
+      </div>
+    </div>
+    <p class="lead">Under the guidance of Professor Yifan Hu, I study statistical inference and budgeted data acquisition for online instrumental-variable regression.</p>
+    <p>My starting point was statistical inference for the TOSG-IVaR and OTSG-IVaR algorithms of <a href="#ref-chen">Chen et al. (2024)</a>, including asymptotic normality and online covariance estimation for their averaged iterates. These results led me to a <em>design question</em>: how should observations be acquired to improve estimation precision under a fixed expected budget? Drawing on the importance-sampling perspective of <a href="#ref-aolaritei">Aolaritei et al. (2026)</a>, I formulated a budgeted acquisition problem, derived its optimal policy, and developed online methods for learning acquisition policies from streaming data.</p>
   </header>
   <nav aria-label="Article sections">
-    <a href="#problem">Problem &amp; OTSG</a><a href="#inference">Inference</a><a href="#budget">Budgeted acquisition</a><a href="#oracle">Oracle</a><a href="#online">Online learning</a><a href="#guarantees">Guarantees</a>
+    <a href="#problem">Preliminaries</a><a href="#inference">Statistical inference</a><a href="#budget">Acquisition under a budget</a><a href="#online">Online algorithms &amp; guarantees</a>
   </nav>
 
   <section id="problem" aria-labelledby="problem-heading">
-    <span class="number">01 / Starting point</span>
-    <h2 id="problem-heading">The IV problem and its online algorithm</h2>
-    <p>I consider a stream \(W_t=(Z_t,X_t,Y_t)\), where \(Z_t\in\mathbb R^{d_z}\) is an instrument, \(X_t\in\mathbb R^{d_x}\) is an endogenous regressor, and \(Y_t\) is the outcome:</p>
-    <div class="equation">\[\begin{aligned}
+    <span class="number">01 / Background</span>
+    <h2 id="problem-heading">Preliminaries: the IV model and OTSG-IVaR</h2>
+    <p><a href="#ref-chen">Chen et al. (2024)</a> formulate streaming instrumental-variable regression as a conditional stochastic-optimization problem and propose TOSG-IVaR and OTSG-IVaR. In the one-sample setting used by OTSG, each arriving observation is \(W_t=(Z_t,X_t,Y_t)\), where \(Z_t\in\mathbb R^{d_z}\) is an instrument, \(X_t\in\mathbb R^{d_x}\) is an endogenous regressor, and \(Y_t\) is the outcome. The linear model is</p>
+    <div class="equation" data-compact="\begin{gathered}Y=X^\top\theta_*+\epsilon_1,\\\mathbb E[Z\epsilon_1]=0,\\[4pt]X=\gamma_*^\top Z+\epsilon_2,\\\mathbb E[\epsilon_2\mid Z]=0.\end{gathered}">\[\begin{aligned}
       Y&amp;=X^\top\theta_*+\epsilon_1, &amp;\mathbb E[Z\epsilon_1]&amp;=0,\\
       X&amp;=\gamma_*^\top Z+\epsilon_2, &amp;\mathbb E[\epsilon_2\mid Z]&amp;=0.
     \end{aligned}\]</div>
-    <p>The errors may be dependent, so ordinary regression need not identify \(\theta_*\). The first stage estimates \(\mathbb E[X\mid Z]=\gamma_*^\top Z\); the second uses this instrument-predictable component to estimate the structural parameter. Define</p>
-    <div class="equation">\[\Sigma_Z=\mathbb E[ZZ^\top],\qquad A=\gamma_*^\top\Sigma_Z\gamma_*\succ0.\]</div>
-    <p>The population second-stage problem can be written as</p>
-    <div class="equation">\[\begin{gathered}
-      \min_\theta f(\theta),\qquad f(\theta)=\frac12\mathbb E[(Y-Z^\top\gamma_*\theta)^2],\\
+    <p>The errors may be dependent, so ordinary regression need not identify \(\theta_*\). The first stage estimates \(\mathbb E[X\mid Z]=\gamma_*^\top Z\); the second uses this instrument-predictable component to estimate the structural parameter. Define \(\Sigma_Z=\mathbb E[ZZ^\top]\) and \(A=\gamma_*^\top\Sigma_Z\gamma_*\succ0\).</p>
+    <p>In this linear setting, the population second-stage objective can be written, up to an additive term independent of \(\theta\), as</p>
+    <div class="equation" data-compact="\begin{gathered}\min_\theta f(\theta)=\frac12\mathbb E[(Y-Z^\top\gamma_*\theta)^2],\\[4pt]\nabla f(\theta)=A(\theta-\theta_*).\end{gathered}">\[\begin{gathered}
+      \min_\theta f(\theta)=\frac12\mathbb E[(Y-Z^\top\gamma_*\theta)^2],\\
       \nabla f(\theta)=A(\theta-\theta_*).
     \end{gathered}\]</div>
-    <p>My starting point is the one-sample algorithm OTSG-IVaR from Chen et al. It learns both stages using one observation tuple at each arrival:</p>
-    <div class="equation">\[\begin{aligned}
+    <h3>OTSG-IVaR: learning both stages from one observation</h3>
+    <p>Their one-sample algorithm, OTSG-IVaR, uses one tuple \((Z_t,X_t,Y_t)\) per arrival and jointly updates the first-stage and structural estimates:</p>
+    <div class="equation" data-compact="\begin{aligned}\theta_{t+1}&amp;=\theta_t\\&amp;\quad-\alpha_{t+1}\gamma_t^\top Z_t\\&amp;\qquad\cdot(Z_t^\top\gamma_t\theta_t-Y_t),\\[5pt]\gamma_{t+1}&amp;=\gamma_t\\&amp;\quad-\beta_{t+1}Z_t(Z_t^\top\gamma_t-X_t^\top).\end{aligned}">\[\begin{aligned}
       \theta_{t+1}&amp;=\theta_t-\alpha_{t+1}\gamma_t^\top Z_t(Z_t^\top\gamma_t\theta_t-Y_t),\\
       \gamma_{t+1}&amp;=\gamma_t-\beta_{t+1}Z_t(Z_t^\top\gamma_t-X_t^\top).
     \end{aligned}\]</div>
-    <p class="caption">Both updates use the states before arrival \(t\). The algorithm is from the original paper; my work develops inference and acquisition design around it.</p>
-    <details><summary>The two-sample baseline: TOSG-IVaR</summary>
-      <p>I also study the original two-sample method. It uses a draw \(X_t'\) with the same conditional law as \(X_t\) given \(Z_t\), independent of \((X_t,Y_t)\) given \(Z_t\):</p>
-      <div class="equation">\[\theta_{t+1}=\theta_t-\alpha_{t+1}(X_t^\top\theta_t-Y_t)X_t'.\]</div>
-      <p>I establish a diminishing-step mean-square bound supporting averaged-iterate normality and online covariance estimation. Its limiting covariance is \(A^{-1}\mathbb E[\epsilon_1^2X'X'^\top]A^{-1}\), which generally differs from the one-sample covariance below. I focus on OTSG for acquisition because it fits an ordinary one-sample stream.</p>
-    </details>
+    <p class="caption">Both updates use the parameter estimates available before arrival \(t\).</p>
+    <p>Chen et al.’s two-sample counterpart, TOSG-IVaR, uses the update \(\theta_{t+1}=\theta_t-\alpha_{t+1}(X_t^\top\theta_t-Y_t)X_t'\). It requires an additional regressor draw \(X_t'\) with the same conditional law as \(X_t\) given \(Z_t\), independent of \((X_t,Y_t)\) conditional on that instrument.</p>
+    <p>I focus on OTSG because its observation requirements fit the acquisition setting: \(Z_t\) is observed first, and the policy decides whether to acquire \((X_t,Y_t)\). Each acquired pair supports both stages of the update.</p>
   </section>
 
   <section id="inference" aria-labelledby="inference-heading">
     <span class="number">02 / My first extension</span>
-    <h2 id="inference-heading">From online estimates to statistical inference</h2>
-    <p>My first question is how to attach valid uncertainty estimates to the online estimator. I study the Polyak–Ruppert average \(\bar\theta_T=T^{-1}\sum_{t=1}^T\theta_t\). Under the report’s moment, rate, and diminishing-step conditions, I obtain</p>
-    <div class="equation">\[\begin{aligned}
-      \sqrt T(\bar\theta_T-\theta_*)&amp;=\frac1{\sqrt T}\sum_{t=1}^T\phi(W_t)+o_p(1),\\
-      \phi(W)&amp;=A^{-1}\gamma_*^\top Z\epsilon_1,\\
-      \sqrt T(\bar\theta_T-\theta_*)&amp;\Rightarrow N(0,V),\quad V=\mathbb E[\phi(W)\phi(W)^\top].
-    \end{aligned}\]</div>
-    <div class="callout"><p><strong>The key cancellation.</strong> Estimating the first stage from the same stream creates a leading error term. I show how it cancels the corresponding component of the second-stage noise. The influence function uses the structural residual \(\epsilon_1=Y-X^\top\theta_*\).</p></div>
-    <p>This identifies what an online covariance estimator should track. With \(h_t=\gamma_t^\top Z_t\) and \(\widehat\epsilon_t=Y_t-X_t^\top\theta_t\), I maintain</p>
-    <div class="equation">\[\begin{aligned}
-      \widehat A_T&amp;=\gamma_T^\top\left(\frac1T\sum_{t=1}^TZ_tZ_t^\top\right)\gamma_T,\\
-      \widehat S_T&amp;=\frac1T\sum_{t=1}^T\widehat\epsilon_t^{\,2}h_th_t^\top,\\
-      \widehat V_T&amp;=\widetilde A_T^{-1}\widehat S_T\widetilde A_T^{-1}\xrightarrow{p}V.
-    \end{aligned}\]</div>
-    <p>Here \(\widetilde A_T\) thresholds the eigenvalues of \(\widehat A_T\) below a fixed \(0&lt;\tau&lt;\lambda_{\min}(A)\). For coordinates with positive limiting variance, I obtain asymptotic \(1-q\) confidence intervals:</p>
-    <div class="equation">\[\bar\theta_{T,j}\ \pm\ z_{1-q/2}\sqrt{\frac{(\widehat V_T)_{jj}}{T}}.\]</div>
-    <p class="caption">The averaging result requires suitable step schedules and error controls; it does not follow automatically from the original last-iterate rate. Full assumptions and proofs appear in Section 3 of the report.</p>
+    <h2 id="inference-heading">Statistical inference and online covariance estimation</h2>
+    <p>To quantify uncertainty in OTSG estimates, I study the Polyak–Ruppert average \(\bar\theta_T=\frac{1}{T}\sum_{t=1}^T\theta_t\).</p>
+    <h3>Asymptotic normality and first-stage cancellation</h3>
+    <p>Under the report’s moment and step-size conditions, the averaged estimator is asymptotically normal:</p>
+    <div class="equation" data-compact="\begin{gathered}\sqrt T(\bar\theta_T-\theta_*)\\\Rightarrow N\!\left(0,\operatorname{Cov}\!\left(A^{-1}\gamma_*^\top Z\epsilon_1\right)\right).\end{gathered}">\[\sqrt T(\bar\theta_T-\theta_*)\Rightarrow
+      N\!\left(0,\;A^{-1}\mathbb E\!\left[\epsilon_1^2\gamma_*^\top ZZ^\top\gamma_*\right]A^{-1}\right).\]</div>
+    <p><strong>The key cancellation.</strong> I show that the leading contribution of first-stage estimation error cancels the corresponding component of the second-stage noise. The resulting influence function depends on the structural residual \(\epsilon_1=Y-X^\top\theta_*\).</p>
+    <h3>Consistent online covariance estimator</h3>
+    <p>Let \(V\) denote the limiting covariance above. With \(h_t=\gamma_t^\top Z_t\) and \(\widehat\epsilon_t=Y_t-X_t^\top\theta_t\), the online covariance estimator uses</p>
+    <div class="equation">\[
+      \widehat A_T=\gamma_T^\top\left(\frac1T\sum_{t=1}^TZ_tZ_t^\top\right)\gamma_T,
+      \qquad \widehat S_T=\frac1T\sum_{t=1}^T\widehat\epsilon_t^{\,2}h_th_t^\top.
+    \]</div>
+    <p>Replacing eigenvalues of \(\widehat A_T\) below a fixed \(0&lt;\tau&lt;\lambda_{\min}(A)\) with \(\tau\) gives \(\widetilde A_T\). The resulting covariance estimator is consistent:</p>
+    <div class="equation">\[\widehat V_T=\widetilde A_T^{-1}\widehat S_T\widetilde A_T^{-1}\xrightarrow{p}V.\]</div>
+    <p>For each coordinate \(j\) with \(V_{jj}&gt;0\), this yields an asymptotic \(1-q\) confidence interval <span class="confidence-interval">\(\bar\theta_{T,j}\ \pm\ z_{1-q/2}\sqrt{\frac{(\widehat V_T)_{jj}}{T}}\)</span>.</p>
+    <p>Analogous asymptotic normality and online covariance estimation results hold for TOSG.</p>
   </section>
 
   <section id="budget" aria-labelledby="budget-heading">
     <span class="number">03 / A new design question</span>
-    <h2 id="budget-heading">Which observations should I acquire?</h2>
-    <p>The influence function measures an observation’s contribution to uncertainty. Inspired by optimal importance sampling, I ask how to use it in a passive stream: I see \(Z_t\) for free, then decide whether to acquire the costly pair \((X_t,Y_t)\).</p>
-    <div class="equation">\[\begin{gathered}
-      D\mid Z\sim\operatorname{Bernoulli}(a(Z)),\qquad D\perp(X,Y)\mid Z,\\
-      \delta\le a(Z)\le1,\qquad \mathbb E[a(Z)]=\rho,\qquad 0&lt;\delta&lt;\rho&lt;1.
-    \end{gathered}\]</div>
-    <p>The budget \(\rho\) is the expected fraction of acquired pairs. Inverse-probability weighting preserves population expectations:</p>
-    <div class="equation">\[\mathbb E\!\left[\frac D{a(Z)}g(W)\right]=\mathbb E[g(W)].\]</div>
-    <p>For a fixed policy, the influence-based covariance per raw-arrival normalization is \(V(a)=\mathbb E[\phi(W)\phi(W)^\top/a(Z)]\). I choose a nonzero \(M\succeq0\) to specify which parameter directions matter and formulate</p>
-    <div class="equation">\[\begin{aligned}
-      m_M(z)&amp;=\mathbb E[\phi(W)^\top M\phi(W)\mid Z=z],\\
-      \min_a\ J_M(a)&amp;=\operatorname{tr}\{MV(a)\}=\mathbb E\!\left[\frac{m_M(Z)}{a(Z)}\right]\\
-      \text{subject to }&amp;\quad \delta\le a(Z)\le1,\quad\mathbb E[a(Z)]=\rho.
-    \end{aligned}\]</div>
-    <p>For example, \(M=I\) targets total parameter variance, while \(M=e_je_j^\top\) targets one coordinate. The design criterion follows from the estimator’s influence function.</p>
-  </section>
-
-  <section id="oracle" aria-labelledby="oracle-heading">
-    <span class="number">04 / The population benchmark</span>
-    <h2 id="oracle-heading">A clipped square-root oracle</h2>
-    <p>If the population score were known, I show that the optimal measurable acceptance policy has a simple form. For a positive, integrable score,</p>
-    <div class="equation">\[\begin{gathered}
-      a_M^*(z)=\operatorname{clip}_{[\delta,1]}\!\left(\sqrt{\frac{m_M(z)}{\lambda_M}}\right),\\
-      \mathbb E[a_M^*(Z)]=\rho.
-    \end{gathered}\]</div>
-    <p>I calibrate \(\lambda_M&gt;0\) to the budget. The policy allocates more acquisitions where the conditional influence contribution is larger, while enforcing probability bounds.</p>
-    <p>For intuition, consider the scalar model with \(\mathbb E[Z^2]=1\), \(\gamma_*\ne0\), and \(\sigma^2(z)=\mathbb E[\epsilon_1^2\mid Z=z]\):</p>
-    <div class="equation">\[\begin{gathered}
-      m(z)=\frac{z^2\sigma^2(z)}{\gamma_*^2},\\
-      a^*(z)\propto |z|\sigma(z)\quad\text{when neither bound is active}.
-    \end{gathered}\]</div>
-    <p>This exposes the roles of instrument leverage and conditional noise. Its unknown population ingredients are what my online procedures must learn.</p>
+    <h2 id="budget-heading">Acquisition under a budget: the problem and its ideal solution</h2>
+    <p>In the acquisition setting, \(Z_t\) is observed first. A binary decision \(D_t\) determines whether \((X_t,Y_t)\) is acquired, with \(D_t=1\) denoting acquisition. The policy draws \(D_t\mid Z_t\sim\operatorname{Bernoulli}(a(Z_t))\), with \(D_t\perp(X_t,Y_t)\mid Z_t\).</p>
+    <p>To preserve the expected updates of the original OTSG algorithm under selective acquisition, I use inverse-probability weighting. With the current iterates held fixed, let \(g(W_t)\) denote the stochastic gradient in either OTSG update; then \(\mathbb E\!\left[\frac{D_t}{a(Z_t)}g(W_t)\right]=\mathbb E[g(W)]\).</p>
+    <p>The OTSG influence function \(\phi(W)=A^{-1}\gamma_*^\top Z\epsilon_1\) links acquisition to estimation precision. For a fixed policy \(a\), the asymptotic covariance per raw arrival is \(V(a)=\mathbb E[\phi(W)\phi(W)^\top/a(Z)]\). A nonzero matrix \(M\succeq0\) specifies the parameter directions of interest, with \(M=I\) as the standard choice. Writing \(m_M(z)=\mathbb E[\phi(W)^\top M\phi(W)\mid Z=z]\), I formulate the budgeted acquisition problem:</p>
+    <div class="equation" data-compact="\begin{array}{ll}\displaystyle\min_a &amp; J_M(a)=\operatorname{tr}\{MV(a)\}\\[4pt]&amp;\displaystyle=\mathbb E\!\left[\frac{m_M(Z)}{a(Z)}\right]\\[6pt]\text{s.t.}&amp;\delta\le a(Z)\le1,\\&amp;\mathbb E[a(Z)]=\rho,\\&amp;0&lt;\delta&lt;\rho&lt;1.\end{array}">\[\begin{array}{ll}
+      \displaystyle\min_a &amp; \displaystyle J_M(a)=\operatorname{tr}\{MV(a)\}=\mathbb E\!\left[\frac{m_M(Z)}{a(Z)}\right]\\[6pt]
+      \text{s.t.}&amp;\delta\le a(Z)\le1,\quad\mathbb E[a(Z)]=\rho,\quad 0&lt;\delta&lt;\rho&lt;1.
+    \end{array}\]</div>
+    <h3 id="oracle">Optimal acquisition with known population information</h3>
+    <p>When \(m_M(z)\) and \(P_Z\) are known, the budgeted acquisition problem can be solved directly. For a positive, integrable score, the optimal policy is</p>
+    <div class="equation">\[
+      a_M^*(z)=\operatorname{clip}_{[\delta,1]}\!\left(\sqrt{\frac{m_M(z)}{\lambda_M}}\right),
+    \]</div>
+    <p>where \(\lambda_M&gt;0\) is chosen to satisfy the population budget \(\mathbb E[a_M^*(Z)]=\rho\). Clipping enforces the probability bounds \([\delta,1]\).</p>
   </section>
 
   <section id="online" aria-labelledby="online-heading">
-    <span class="number">05 / Implementable procedures</span>
-    <h2 id="online-heading">Learning the estimator and the acquisition policy together</h2>
-    <p>I use a policy \(a_t\) fixed by the observed history before arrival \(t\). After seeing \(Z_t\), I set \(\pi_t=a_t(Z_t)\), draw \(D_t\), and use the same weight \(w_t=D_t/\pi_t\) in both IV updates:</p>
-    <div class="equation">\[\begin{aligned}
-      \theta_{t+1}&amp;=\theta_t-\alpha_{t+1}w_t\gamma_t^\top Z_t(Z_t^\top\gamma_t\theta_t-Y_t),\\
-      \gamma_{t+1}&amp;=\gamma_t-\beta_{t+1}w_tZ_t(Z_t^\top\gamma_t-X_t^\top).
+    <span class="number">04 / Online learning and theory</span>
+    <h2 id="online-heading">Online algorithms and their theoretical guarantees</h2>
+    <p>The budgeted acquisition problem optimizes over a function, and its solution depends on unknown population quantities. To make online learning tractable, I restrict the policy space to two finite-dimensional classes: policies that are constant within fixed strata, and policies in a fixed parametric family.</p>
+    <p>Let \(a_t\) denote the acquisition policy available before arrival \(t\). After observing \(Z_t\), the algorithm acquires \((X_t,Y_t)\) with probability \(a_t(Z_t)\), applies inverse-probability weighting to both IV updates, and updates the policy:</p>
+    <div class="equation" data-compact="\begin{aligned}\theta_{t+1}&amp;=\theta_t\\&amp;\quad-\alpha_{t+1}\frac{D_t}{a_t(Z_t)}\gamma_t^\top Z_t\\&amp;\qquad\cdot(Z_t^\top\gamma_t\theta_t-Y_t),\\[5pt]\gamma_{t+1}&amp;=\gamma_t\\&amp;\quad-\beta_{t+1}\frac{D_t}{a_t(Z_t)}Z_t\\&amp;\qquad\cdot(Z_t^\top\gamma_t-X_t^\top),\\[5pt]a_t&amp;\longrightarrow a_{t+1}\quad\text{(policy update)}.\end{aligned}">\[\begin{aligned}
+      \theta_{t+1}&amp;=\theta_t-\alpha_{t+1}\frac{D_t}{a_t(Z_t)}\gamma_t^\top Z_t(Z_t^\top\gamma_t\theta_t-Y_t),\\
+      \gamma_{t+1}&amp;=\gamma_t-\beta_{t+1}\frac{D_t}{a_t(Z_t)}Z_t(Z_t^\top\gamma_t-X_t^\top),\\[5pt]
+      a_t&amp;\longrightarrow a_{t+1}\qquad\text{(policy update)}.
     \end{aligned}\]</div>
-    <p>I evaluate these directions only on acceptance; a rejection leaves both states unchanged. I develop two policy learners around this shared recursion.</p>
-    <h3>Direct allocation over fixed strata</h3>
-    <p>I partition instrument space into fixed cells \(C_1,\ldots,C_K\), estimate their probabilities \(\widehat p_{t,j}\) and conditional influence scores \(\widehat m_{t,j}\), and solve the empirical allocation directly:</p>
-    <div class="equation">\[\begin{gathered}
-      a_{t+1,j}=\operatorname{clip}_{[\delta,1]}\sqrt{\widehat m_{t,j}/\lambda_t},\\
-      \sum_j\widehat p_{t,j}a_{t+1,j}=\rho.
-    \end{gathered}\]</div>
-    <p>The policy is constant inside each cell, so acceptance preserves the within-cell distribution and supports direct score estimation.</p>
+    <h3>Direct acquisition over fixed finite strata</h3>
+    <p>For a fixed partition \(C_1,\ldots,C_K\), let the policy take a constant value \(a_j\) on each cell. Writing \(p_j=P(Z\in C_j)\) and \(m_{M,j}=\mathbb E[\phi(W)^\top M\phi(W)\mid Z\in C_j]\), the budgeted acquisition problem reduces to</p>
+    <div class="equation" data-compact="\begin{array}{ll}\displaystyle\min_{a_1,\ldots,a_K}&amp;\displaystyle J_M(a)=\mathbb E\!\left[\frac{m_M(Z)}{a(Z)}\right]=\sum_{j=1}^K\frac{p_jm_{M,j}}{a_j},\\[6pt]\text{s.t.}&amp;\displaystyle\sum_{j=1}^Kp_ja_j=\rho,\\&amp;\delta\le a_j\le1.\end{array}">\[\begin{array}{ll}
+      \displaystyle\min_{a_1,\ldots,a_K}&amp;\displaystyle J_M(a)=\mathbb E\!\left[\frac{m_M(Z)}{a(Z)}\right]=\sum_{j=1}^K\frac{p_jm_{M,j}}{a_j},\\[6pt]
+      \text{s.t.}&amp;\displaystyle\sum_{j=1}^Kp_ja_j=\rho,\qquad\delta\le a_j\le1.
+    \end{array}\]</div>
+    <p>Let \(a_M^{\mathrm{str}}\) denote the policy that minimizes this criterion over the fixed-stratum class. At time \(t\), the accumulated observations provide estimates \(\widehat p_{t,j}\) and \(\widehat m_{t,j}\). Substituting these estimates into the problem gives the next acquisition policy, \(a_{t+1}(z)=a_{t+1,j}=\operatorname{clip}_{[\delta,1]}\sqrt{\widehat m_{t,j}/\lambda_t}\) for \(z\in C_j\).</p>
+    <p>Here, \(\lambda_t&gt;0\) is chosen to satisfy \(\sum_{j=1}^K\widehat p_{t,j}a_{t+1,j}=\rho\), the budget under the estimated cell probabilities. Solving this finite-dimensional problem with the current estimates provides the policy update.</p>
+    <p><strong>Approximating the unrestricted optimum.</strong> Consider a deterministic sequence of successively refined finite partitions. Within expanding cubes that eventually cover the instrument space, the maximum cell diameter tends to zero. Under the score conditions in Section 03, with \(M\), the budget, and the probability bounds fixed, their population-optimal policies \(a_{M,r}^{\mathrm{str}}\) satisfy</p>
+    <div class="equation">\[a_{M,r}^{\mathrm{str}}\xrightarrow{L^p}a_M^*,\qquad J_M(a_{M,r}^{\mathrm{str}})\downarrow J_M(a_M^*),\qquad 1\le p&lt;\infty.\]</div>
     <h3>SGD within a feasible policy family</h3>
-    <p>I also optimize a fixed family \(a(z;\eta)\), \(\eta\in\mathcal K\), whose members satisfy the probability bounds and population budget. Projected SGD learns its variance-minimizing member.</p>
-    <details><summary>The policy-gradient update</summary>
-      <p>Using the pre-arrival geometry and IV states, define the estimated influence score on an acquired observation by</p>
-      <div class="equation">\[\widehat q_t=\widehat\epsilon_t^{\,2}\left\|M^{1/2}\widetilde A_{t-1}^{-1}\gamma_t^\top Z_t\right\|^2.\]</div>
-      <p>Then update</p>
-      <div class="equation">\[\begin{aligned}
-        \widehat g_t&amp;=-\frac{D_t\widehat q_t}{\pi_t^3}\nabla_\eta a(Z_t;\eta_t),\\
-        \eta_{t+1}&amp;=\Pi_{\mathcal K}(\eta_t-s_{t+1}\widehat g_t).
-      \end{aligned}\]</div>
-      <p>On rejection, I set \(\widehat g_t=0\) without observing the score. The cubic inverse probability accounts for sampling and differentiation of the criterion. Only the policy parameter is projected.</p>
-    </details>
-  </section>
-
-  <section id="guarantees" aria-labelledby="guarantees-heading">
-    <span class="number">06 / What I can establish</span>
-    <h2 id="guarantees-heading">Convergence, inference, and the scope of optimality</h2>
-    <p>Under explicit sufficient conditions, I establish IV consistency for predictable acquisition policies with a positive probability floor. Suitable polynomial steps and a deterministic positive policy limit \(a_\infty\) additionally give</p>
-    <div class="equation">\[\begin{aligned}
-      (\theta_t,\gamma_t)&amp;\longrightarrow(\theta_*,\gamma_*)\quad\text{almost surely},\\
-      \sqrt n(\bar\theta_n-\theta_*)&amp;=\frac1{\sqrt n}\sum_{t=1}^n\frac{D_t}{\pi_t}\phi(W_t)+o_p(1)\\
-      &amp;\Rightarrow N(0,V(a_\infty)).
+    <p>The second approach uses a fixed family \(a(z;\eta)\), \(\eta\in\mathcal K\), whose members satisfy the probability bounds and population budget. Within this family, the optimal parameter is \(\eta_M^\star=\operatorname*{arg\,min}_{\eta\in\mathcal K}J_M\{a(\cdot;\eta)\}\), giving the policy \(a_M^{\mathrm{par}}(z)=a(z;\eta_M^\star)\).</p>
+    <p>For an acquired observation, the quadratic influence score is estimated by \(\widehat q_t=\widehat\epsilon_t^{\,2}\|M^{1/2}\widetilde A_{t-1}^{-1}\gamma_t^\top Z_t\|^2\), where \(\widehat\epsilon_t=Y_t-X_t^\top\theta_t\). The projected SGD update is</p>
+    <div class="equation">\[
+      \eta_{t+1}=\Pi_{\mathcal K}(\eta_t-s_{t+1}\widehat g_t),\qquad\text{where}\quad \widehat g_t=-\frac{D_t\widehat q_t}{a(Z_t;\eta_t)^3}\nabla_\eta a(Z_t;\eta_t).
+    \]</div>
+    <p>The updated parameter gives the next policy \(a_{t+1}(z)=a(z;\eta_{t+1})\).</p>
+    <h3 id="guarantees">Convergence and statistical inference</h3>
+    <p>Let \(a_\infty\) denote the optimum in the chosen policy class: \(a_M^{\mathrm{str}}\) for fixed-stratum acquisition and \(a_M^{\mathrm{par}}\) for parametric acquisition. Under the conditions stated in the report for each method, I establish policy convergence, IV consistency, and asymptotic normality:</p>
+    <div class="equation" data-compact="\begin{aligned}&amp;(\theta_t,\gamma_t)\longrightarrow(\theta_*,\gamma_*)\quad\text{a.s.},\\[5pt]&amp;\sqrt n(\bar\theta_n-\theta_*)\Rightarrow N(0,V(a_\infty)).\end{aligned}">\[\begin{aligned}
+      &amp;(\theta_t,\gamma_t)\longrightarrow(\theta_*,\gamma_*)\quad\text{a.s.},\\[5pt]
+      &amp;\sqrt n(\bar\theta_n-\theta_*)\Rightarrow N(0,V(a_\infty)).
     \end{aligned}\]</div>
-    <p>The same first-stage cancellation survives adaptive acquisition. My online covariance estimator accounts for squared acquisition weights:</p>
+    <p>The first-stage cancellation extends to adaptive acquisition. A consistent online covariance estimator uses squared acquisition weights:</p>
     <div class="equation">\[\begin{aligned}
-      \widehat S_n^{\mathrm{acq}}&amp;=\frac1n\sum_{t=1}^n\frac{D_t}{\pi_t^2}\widehat\epsilon_t^{\,2}h_th_t^\top,\\
+      \widehat S_n^{\mathrm{acq}}&amp;=\frac1n\sum_{t=1}^n\frac{D_t}{a_t(Z_t)^2}\widehat\epsilon_t^{\,2}h_th_t^\top,\\
       \widehat V_n^{\mathrm{acq}}&amp;=\widetilde A_n^{-1}\widehat S_n^{\mathrm{acq}}\widetilde A_n^{-1}\longrightarrow V(a_\infty).
     \end{aligned}\]</div>
-    <p>I prove convergence to the optimum on a fixed partition for direct allocation, and to the class optimum for parametric SGD under strong convexity and regularity. Writing either limiting design as \(a_M^\star\),</p>
-    <div class="equation">\[\begin{gathered}
-      J_M(a_t)\longrightarrow J_M(a_M^\star)\le J_M(\rho)=\rho^{-1}\operatorname{tr}(MV),\\
-      \frac1n\sum_{t=1}^nD_t\longrightarrow\rho\quad\text{almost surely}.
+    <p>For both methods, the acquisition criterion converges to its class-optimal value, no larger than that of uniform acquisition at the same budget, while the acquired fraction converges to \(\rho\):</p>
+    <div class="equation" data-compact="\begin{gathered}a_t\longrightarrow a_\infty,\qquad J_M(a_t)\longrightarrow J_M(a_\infty)\le J_M(\rho)=\rho^{-1}\operatorname{tr}(MV)\quad\text{a.s.},\\[5pt]\frac1n\sum_{t=1}^nD_t\longrightarrow\rho\\\text{a.s.}.\end{gathered}">\[\begin{gathered}
+      a_t\longrightarrow a_\infty,\qquad J_M(a_t)\longrightarrow J_M(a_\infty)\le J_M(\rho)=\rho^{-1}\operatorname{tr}(MV)\quad\text{a.s.},\\
+      \frac1n\sum_{t=1}^nD_t\longrightarrow\rho\quad\text{a.s.}.
     \end{gathered}\]</div>
-    <p>The comparison uses uniform acquisition at the same budget and the chosen scalar variance criterion. Separately, I show that population-optimal allocations on expanding, refining finite partitions approach the unrestricted oracle:</p>
-    <div class="equation">\[J_M(a_{M,r}^\star)\downarrow J_M(a_M^*).\]</div>
-    <details><summary>Conditions and boundaries of these results</summary>
-      <ul>
-        <li>The IV dimensions are fixed, \(\Sigma_Z\succ0\), and \(A\succ0\). The adaptive analysis uses the report’s finite composite fourth-moment condition and a fixed floor \(\pi_t\ge\delta&gt;0\).</li>
-        <li>Adaptive normality uses \(\alpha_t\propto t^{-a}\), \(\beta_t\propto t^{-b}\), with \(1/2&lt;a,b&lt;1\) and \(b&gt;2a-1\), together with a deterministic policy limit.</li>
-        <li>Parametric convergence uses a fixed feasible family, a compact convex parameter set, a bounded policy gradient, a strongly convex criterion, and policy-step exponent in \((1/2,1)\).</li>
-        <li>Class optimality need not equal the unrestricted oracle. Partition refinement compares population optima; the online theorem keeps the partition fixed.</li>
-        <li>The budget is an expected sampling proportion, and the acquired fraction converges to it. I do not impose a hard sample-count budget or assert a theorem for stopping exactly at a prescribed acquisition count.</li>
-        <li>The comparison does not assert finite-sample error improvement or covariance improvement in every direction. Selective acquisition also cannot improve on full observation at the same raw-arrival horizon.</li>
-      </ul>
-      <p>Sections 5–6 and the appendices give the full conditions and proofs. Finite-sample coverage and learned-policy performance require separate empirical evaluation.</p>
-    </details>
-    <p>This project has led me from uncertainty quantification for an existing estimator to a design problem in which estimation, inference, and acquisition must remain compatible while learning from the same stream.</p>
   </section>
 
-  <section id="report" aria-labelledby="report-heading">
-    <span class="number">07 / Further reading</span>
-    <h2 id="report-heading">Full report and starting references</h2>
-    <p>The report contains the complete algorithms, assumptions, theorem statements, proofs, and an oracle population illustration.</p>
-    <p><a class="button" href="./report.pdf">Read the full technical report (PDF) <span aria-hidden="true">↗</span></a></p>
-    <p class="caption">Report version: November 7, 2026.</p>
+  <aside class="references-section" id="references" aria-labelledby="references-heading">
+    <h2 id="references-heading">References</h2>
     <ol class="references">
       <li id="ref-chen">Xuxing Chen, Abhishek Roy, Yifan Hu, and Krishnakumar Balasubramanian. <a href="https://arxiv.org/abs/2405.19463v1">Stochastic Optimization Algorithms for Instrumental Variable Regression with Streaming Data</a> (2024).</li>
       <li id="ref-aolaritei">Liviu Aolaritei, Bart P. G. Van Parys, Henry Lam, and Michael I. Jordan. <a href="https://arxiv.org/abs/2504.03560v3">Stochastic Optimization with Optimal Importance Sampling</a> (2026 revision).</li>
     </ol>
-  </section>
+  </aside>
   <footer>Yulin Liu · Research overview · November 2026</footer>
 </main>
 </body>
